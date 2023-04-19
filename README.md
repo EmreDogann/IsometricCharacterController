@@ -12,12 +12,19 @@ https://user-images.githubusercontent.com/48212096/233183996-4866846e-c380-4c6d-
 - Cutout Shader used during object obstruction.
 
 - Includes smooth follow camera.
+- Highly Customizable:
+  - Movement Damping
+  - Jumping:
+    - Jump Height
+    - Coyote Jumping
+    - Jump Buffering
+    - Better Jump parabolic motion
 
 ## Controls
 | Control | Keyboard | Gamepad |
 | :---    |  :---:   |   :---:  |
 | Move    | `WASD`     | `Left Stick` |
-| Jump    | `Space`    | `A (Xbox) / X (Playstation)` |
+| Jump    | `Space`    | `A (Xbox) / X (PlayStation)` |
 | Glide   | Hold Jump button while airborne | Hold Jump button while airborne
 
 # Requirements
