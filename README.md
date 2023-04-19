@@ -3,6 +3,8 @@ A simple Isometric Character Controller made in Unity.
 
 Uses Unity's **New Input System**. Supports **Keyboard** and **Gamepad**.
 
+https://user-images.githubusercontent.com/48212096/233183996-4866846e-c380-4c6d-961d-d8a948f11808.mp4
+
 ## Features
 
 - Walking, Jumping, and Gliding (inspiration from Breath Of The Wild).
