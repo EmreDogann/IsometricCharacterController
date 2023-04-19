@@ -8,7 +8,6 @@ public class IsometricCharacterController : MonoBehaviour
 {
     [Header("References")]
     public CharacterController controller;
-    public Transform playerCamera;
     public Transform playerMesh;
     public Transform parachute;
 
@@ -130,14 +129,6 @@ public class IsometricCharacterController : MonoBehaviour
     private Vector3 glideVector;
     private Vector3 glideVelocity;
 
-    private GravityType gravityType;
-    private enum GravityType
-    {
-        Basic,
-        Fall,
-        LowJump,
-    }
-
     private bool isGrounded;
     private bool isJumping;
     private bool isGliding;
@@ -160,13 +151,14 @@ public class IsometricCharacterController : MonoBehaviour
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Move.started += MoveStarted;
-        playerInputActions.Player.Glide.performed += GlidePerformed;
         playerInputActions.Player.Glide.canceled += GlideCanceled;
     }
 
     private void OnDisable()
     {
         playerInput.onControlsChanged -= onControlsChanged;
+        playerInputActions.Player.Move.started -= MoveStarted;
+        playerInputActions.Player.Glide.canceled -= GlideCanceled;
         playerInputActions.Player.Disable();
     }
 
@@ -192,12 +184,6 @@ public class IsometricCharacterController : MonoBehaviour
                 currentDampingMove = isGrounded ? inputDampingMovementBasic : inputDampingMovementBasic + midAirDampingMove;
                 currentDampingRot = isGrounded ? currentDampingRot : inputDampingRotation + midAirDampingRot;
             }
-            //else if (dot > 0.8f)
-            //{
-            //    moveStage.Clear();
-            //    moveStage.Add(MoveStageType.Basic);
-            //    currentDampingMove = inputDampingMovementBasic;
-            //}
             else if (dot <= 0.0f)
             {
                 currentDampingMove = isGrounded ? inputDampingMovementTurn : inputDampingMovementTurn + midAirDampingMove;
@@ -283,10 +269,8 @@ public class IsometricCharacterController : MonoBehaviour
         {
             isJumping = true;
 
-            // v = sqrt(h * -2 * g)
             jumpBufferCounter = 0.0f;
             coyoteTimeCounter = 0.0f;
-            //velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity); // Will always jump to the same height.
             velocity.y = jumpHeight;
 
             playerMesh.gameObject.GetComponent<PlayerAnimation>().Activate();
@@ -297,32 +281,25 @@ public class IsometricCharacterController : MonoBehaviour
         {
             wantToGlide = false;
             isGliding = true;
-            //parachute.gameObject.SetActive(true);
             parachute.gameObject.GetComponent<ParachuteAnimation>().Activate();
 
-            //glideVector.y = ((-velocity.y / glideDamping) + (-gravity * fallMultiplier + (-gravity * fallMultiplier * glideDamping)) + glideDrag);
             glideVector.y = (-gravity * fallMultiplier) - (velocity.y / glideDamping);
             velocityAfterGlideStart = velocity;
             additionalVelocity = 0.0f;
-            //time = 0.0f;
-            //velocity.y -= velocity.y; // I have no fucking idea why this works. Otherwise the glide won't be able to exactly cancel out the gravity.
         }
 
 
         // Apply gravity.
         if (velocity.y > 0.0f && !playerInputActions.Player.Jump.IsPressed() && !isGliding)
         {
-            //gravityType = GravityType.LowJump;
             gravityVector.y = (gravity * lowJumpMultiplier);
         }
         else if (velocity.y < jumpVelocityFalloff)
         {
-            //gravityType = GravityType.Fall;
             gravityVector.y = (gravity * fallMultiplier);
         }
         else
         {
-            //gravityType = GravityType.Basic;
             gravityVector.y = gravity;
         }
 
@@ -330,35 +307,7 @@ public class IsometricCharacterController : MonoBehaviour
         // Apply gliding drag force.
         if (isGliding)
         {
-            // Smoothly interpolate gliding.
-            //time += Time.deltaTime;
-            //if (time < glideDamping)
-            //{
-            //    glideVector = Vector3.Lerp(glideVector, transform.up * (-gravity * fallMultiplier), time);
-            //}
-            //glideVector = Vector3.SmoothDamp(glideVector, transform.up * (-gravity * fallMultiplier), ref glideVelocity, glideDamping);
-            //velocity.y = Mathf.SmoothDamp(velocity.y, -glideDrag, ref glideVelocity.y, glideDamping);
             CalcDampedSimpleHarmonicMotion(ref velocity.y, ref glideVelocity.y, -glideDrag, Time.deltaTime, glideSpringFrequency, glideDamping);
-
-            //additionalVelocity = velocity.y - velocityAfterGlideStart.y + (glideVector.y * Time.deltaTime);
-            //Debug.Log(additionalVelocity);
-            //if (glideVector.y - (-gravity * fallMultiplier) > 0.0001f)
-            //{
-            //    //additionalVelocity += gravityVector.y * Time.deltaTime;
-            //    //additionalVelocity += (velocity.y / glideDamping) * Time.deltaTime;
-            //    additionalVelocity = prevVelocity.y - glideVector.y;
-            //    //velocity.y -= additionalVelocity;
-            //    //additionalVelocity += velocity.y + (glideVector.y * Time.deltaTime);
-            //}
-            //else
-            //{
-            //    //additionalVelocity = 0.0f;
-            //}
-
-            //glideVector.y -= additionalVelocity;
-
-            //velocity.y += (glideVector.y) * Time.deltaTime;
-
             // Round to remove floating point precision errors (maybe from Time.deltaTime accumulation?).
             velocity.y = Mathf.Round(velocity.y * 1000000.0f) * 0.000001f;
         }
@@ -375,7 +324,7 @@ public class IsometricCharacterController : MonoBehaviour
     // Test is the targetDir is pointing either on the left or right side of a transform relative to its forward.
     float angleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
     {
-        Vector3 right = Vector3.Cross(up, fwd);        // right vector
+        Vector3 right = Vector3.Cross(up, fwd); // right vector
         float dir = Vector3.Dot(right, targetDir);
 
         if (dir > 0f)
@@ -408,15 +357,6 @@ public class IsometricCharacterController : MonoBehaviour
     private void MoveStarted(InputAction.CallbackContext ctx)
     {
         currentDampingMove = inputDampingMovementAccel; // When starting to move.
-    }
-
-    private void GlidePerformed(InputAction.CallbackContext ctx)
-    {
-        //if (!isGrounded && coyoteTimeCounter < 0.0f && jumpBufferCounter < 0.0f && !isGliding) // Is gliding in the air.
-        //{
-        //    isGliding = true;
-        //    parachute.gameObject.SetActive(true);
-        //}
     }
 
     private void GlideCanceled(InputAction.CallbackContext ctx)

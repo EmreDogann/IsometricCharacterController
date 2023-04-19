@@ -12,15 +12,10 @@ public class ParachuteAnimation : MonoBehaviour
     [SerializeField]
     private Vector3 goalScale;
 
-    //[SerializeField]
-    //[Range(0.0f, 30.0f)]
-    //private float frequency;
-
     [SerializeField]
     [Range(0.0f, 1.0f)]
     private float damping;
 
-    private Vector3 goal;
     private Vector3 spingMotionVelocity;
 
     private Vector3 rotVector;
@@ -31,20 +26,17 @@ public class ParachuteAnimation : MonoBehaviour
     private void Start()
     {
         transform.localScale = Vector3.zero;
-        //rotVector = transform.localEulerAngles;
     }
 
     public void Activate()
     {
         isActive = true;
-        goal = goalScale;
         ScaleSpring.SpringTo(goalScale);
     }
 
     public void Deactivate()
     {
         isActive = false;
-        goal = Vector3.zero;
         ScaleSpring.SpringTo(Vector3.zero);
     }
 
@@ -60,22 +52,5 @@ public class ParachuteAnimation : MonoBehaviour
             t = 1.0f - (t / delta);
             transform.localRotation = Quaternion.Slerp(transform.localRotation, target, t);
         }
-
-        //transform.rotation = Quaternion.RotateTowards(transform.rotation, playerMeshTransform.rotation, 100.0f * Time.deltaTime);
-        //transform.localEulerAngles = rotVector;
-
-        //Vector3 currentScale = transform.localScale;
-        //CalcDampedSimpleHarmonicMotion(ref currentScale, ref spingMotionVelocity, goal, Time.deltaTime, frequency, damping);
-
-        //if (currentScale != goal)
-        //{
-        //    ScaleSpring.SpringTo(currentScale);
-        //    //OnSpringMotion(currentScale);
-        //}
     }
-
-    //public void OnSpringMotion(Vector3 springValue)
-    //{
-    //    transform.localScale = springValue;
-    //}
 }

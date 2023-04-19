@@ -6,8 +6,6 @@ public class PlayerCutoutSync : MonoBehaviour
 {
     public static int PosID = Shader.PropertyToID("_Position");
     public static int SizeID = Shader.PropertyToID("_Size");
-    //public static int OpacityID = Shader.PropertyToID("_Opacity");
-    //public static int SmoothnessID = Shader.PropertyToID("_Position");
 
     public Camera camera;
     public LayerMask mask;
