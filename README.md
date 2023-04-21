@@ -1,7 +1,7 @@
 # Isometric Character Controller
 A simple Isometric Character Controller made in Unity.
 
-[<img alt="Available on itch.io" src="https://github.com/EmreDogann/IsometricCharacterController/blob/master/Resources/badge-color.png?raw=true" width="200" />](https://emredogan.itch.io/isometric-character-controller-unity)
+[<img alt="Available on itch.io" src="https://github.com/EmreDogann/Repository-Resources/blob/master/Badges/itchio-color.png?raw=true" width="200" />](https://emredogan.itch.io/isometric-character-controller-unity)
 
 Uses Unity's **New Input System**. Supports **Keyboard** and **Gamepad**.
 
